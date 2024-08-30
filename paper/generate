@@ -1,18 +1,18 @@
 #!/usr/bin/ruby
 
 # For an OO language, this is distinctly procedural. Should probably fix that.
-require 'json'
+require "json"
 
 details = Hash.new({})
 
 capture_params = [
-  { :name => "title", :message => "Enter project name." },
-  { :name => "url", :message => "Enter the URL of the project repository." },
-  { :name => "description", :message => "Enter the (short) project description." },
-  { :name => "license", :message => "Enter the license this software shared under. (hit enter to skip)\nFor example MIT, BSD, GPL v3.0, Apache 2.0" },
-  { :name => "doi", :message => "Enter the DOI of the archived version of this code. (hit enter to skip)\nFor example http://dx.doi.org/10.6084/m9.figshare.828487" },
-  { :name => "keywords", :message => "Enter keywords that should be associated with this project (hit enter to skip)\nComma-separated, for example: turkey, chicken, pot pie" },
-  { :name => "version", :message => "Enter the version of your software (hit enter to skip)\nSEMVER preferred: http://semver.org e.g. v1.0.0" }
+  {name: "title", message: "Enter project name."},
+  {name: "url", message: "Enter the URL of the project repository."},
+  {name: "description", message: "Enter the (short) project description."},
+  {name: "license", message: "Enter the license this software shared under. (hit enter to skip)\nFor example MIT, BSD, GPL v3.0, Apache 2.0"},
+  {name: "doi", message: "Enter the DOI of the archived version of this code. (hit enter to skip)\nFor example http://dx.doi.org/10.6084/m9.figshare.828487"},
+  {name: "keywords", message: "Enter keywords that should be associated with this project (hit enter to skip)\nComma-separated, for example: turkey, chicken, pot pie"},
+  {name: "version", message: "Enter the version of your software (hit enter to skip)\nSEMVER preferred: http://semver.org e.g. v1.0.0"}
 ]
 
 puts "I'm going to try and help you prepare some things for your JOSS submission"
@@ -84,11 +84,10 @@ when "y", "yes"
       print "> "
       affiliation = gets.chomp
 
-
-      details['authors'].merge!(author => { 'commits' => count,
-                                            'email' => email,
-                                            'orcid' => orcid,
-                                            'affiliation' => affiliation })
+      details["authors"].merge!(author => {"commits" => count,
+                                           "email" => email,
+                                           "orcid" => orcid,
+                                           "affiliation" => affiliation})
 
     when "n", "no"
       puts "OK boss..."
@@ -114,13 +113,13 @@ puts "Generating some JSON goodness..."
 # Build the output list of authors from the inputs we've collected.
 output_authors = []
 
-details['authors'].each do |author_name, values|
+details["authors"].each do |author_name, values|
   entry = {
-    "@id" => values['orcid'],
+    "@id" => values["orcid"],
     "@type" => "Person",
-    "email" => values['email'],
+    "email" => values["email"],
     "name" => author_name,
-    "affiliation" => values['affiliation']
+    "affiliation" => values["affiliation"]
   }
   output_authors << entry
 end
@@ -131,16 +130,16 @@ output = {
   "@context" => "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
   "@type" => "Code",
   "author" => output_authors,
-  "identifier" => details['doi'],
-  "codeRepository" => details['url'],
+  "identifier" => details["doi"],
+  "codeRepository" => details["url"],
   "datePublished" => Time.now.strftime("%Y-%m-%d"),
   "dateModified" => Time.now.strftime("%Y-%m-%d"),
   "dateCreated" => Time.now.strftime("%Y-%m-%d"),
-  "description" => details['description'],
-  "keywords" => details['keywords'],
-  "license" => details['license'],
-  "title" => details['title'],
-  "version" => details['version']
+  "description" => details["description"],
+  "keywords" => details["keywords"],
+  "license" => details["license"],
+  "title" => details["title"],
+  "version" => details["version"]
 }
 
-File.open('codemeta.json', 'w') {|f| f.write(JSON.pretty_generate(output)) }
+File.write("codemeta.json", JSON.pretty_generate(output))
