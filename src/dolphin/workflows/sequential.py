@@ -31,6 +31,7 @@ def run_wrapped_phase_sequential(
     slc_vrt_file: Filename,
     ministack_planner: MiniStackPlanner,
     ministack_size: int,
+    manual_reference_idx: int | None = None,
     half_window: dict,
     strides: Optional[dict] = None,
     mask_file: Optional[Filename] = None,
@@ -51,7 +52,10 @@ def run_wrapped_phase_sequential(
         strides = {"x": 1, "y": 1}
     output_folder = ministack_planner.output_folder
     output_folder.mkdir(parents=True, exist_ok=True)
-    ministacks = ministack_planner.plan(ministack_size)
+    ministacks = ministack_planner.plan(
+        ministack_size,
+        manual_idxs=[manual_reference_idx] if manual_reference_idx is not None else [],
+    )
 
     v_all = VRTStack.from_vrt_file(slc_vrt_file)
     logger.info(f"Full file range: {v_all.file_list[0]} to {v_all.file_list[-1]}")
@@ -89,19 +93,21 @@ def run_wrapped_phase_sequential(
                 sort_files=False,
                 subdataset=v_all.subdataset,
             )
+            # # Run the phase linking process on the current ministack
+            # reference_idx = max(0, first_real_slc_idx - 1)
 
             # Currently: we are always using the first SLC as the reference,
             # even if this is a compressed SLC.
             # Will need to change this if we want to accommodate the original
             # Sequential Estimator+Datum Adjustment method.
-            reference_idx = 0
+
             run_wrapped_phase_single(
                 slc_vrt_file=cur_vrt,
                 ministack=ministack,
                 output_folder=cur_output_folder,
                 half_window=half_window,
                 strides=strides,
-                reference_idx=reference_idx,
+                compressed_reference_idx=ministack.reference_idx,
                 use_evd=use_evd,
                 beta=beta,
                 mask_file=mask_file,

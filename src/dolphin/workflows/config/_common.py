@@ -310,6 +310,16 @@ class OutputOptions(BaseModel, extra="forbid"):
         [4, 8, 16, 32, 64],
         description="List of overview levels to create (if `add_overviews=True`).",
     )
+    extra_reference_date: Optional[datetime] = Field(
+        None,
+        description=(
+            "Specify an extra reference datetime. Adding this lets you"
+            " to create and unwrap two single reference networks; the later resets at"
+            " the given date (e.g. for a large earthquake event). If passing strings,"
+            " formats accepted are YYYY-MM-DD[T]HH:MM[:SS[.ffffff]][Z or [±]HH[:]MM],"
+            " or YYYY-MM-DD"
+        ),
+    )
 
     # validators
     @field_validator("bounds", mode="after")
