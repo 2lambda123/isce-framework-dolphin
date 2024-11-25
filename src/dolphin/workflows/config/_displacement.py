@@ -29,8 +29,8 @@ from ._common import (
 from ._unwrap_options import UnwrapOptions
 
 __all__ = [
-    "DisplacementWorkflow",
     "CorrectionOptions",
+    "DisplacementWorkflow",
 ]
 
 logger = logging.getLogger(__name__)
