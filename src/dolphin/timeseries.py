@@ -717,7 +717,7 @@ def invert_unw_network(
 
     try:
         # Ensure it's a list of pairs
-        ifg_tuples = [(ref, sec) for (ref, sec) in ifg_date_pairs]  # noqa: C416
+        ifg_tuples = [(ref, sec) for (ref, sec) in ifg_date_pairs]
     except ValueError as e:
         raise ValueError(
             "Each item in `ifg_date_pairs` must be a sequence of length 2"
